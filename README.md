@@ -120,8 +120,8 @@ The certificates supplied by Certifi will be automatically used.
 ## Custom HTTP client
 
 This library ships with its own minimal HTTP client for compatibility reasons. If you would like to use a different HTTP
-client, you can do so by implementing the `ginger_sdk.http_client.HttpClient` interface and then constructing your own
-client:
+client, you can do so by extending the `ginger_sdk.http_client.HttpClient` abstract base class and then constructing
+your own client:
 
 ```python
 from ginger_sdk.api_client import ApiClient
