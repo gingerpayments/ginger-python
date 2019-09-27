@@ -24,9 +24,9 @@ class ApiClient(object):
     def __init__(self, http_client: HttpClient) -> None:
         self._http_client = http_client
 
-    def get_ideal_issuers(self) -> dict:
+    def get_ideal_issuers(self) -> list:
         """
-        Get an array of possible iDEAL issuers.
+        Get a list of possible iDEAL issuers.
 
         :raises HttpRequestError: When an error occurred while processing the request.
         :raises json.JSONDecodeError: When the response data could not be decoded.
@@ -75,7 +75,7 @@ class ApiClient(object):
 
         return self._interpret_response(response)
 
-    def update_order(self, id: str, order_data: dict):
+    def update_order(self, id: str, order_data: dict) -> dict:
         """
         Update an order.
 
@@ -97,7 +97,7 @@ class ApiClient(object):
 
         return self._interpret_response(response)
 
-    def refund_order(self, id: str, order_data: dict):
+    def refund_order(self, id: str, order_data: dict) -> dict:
         """
         Refund an order.
 
