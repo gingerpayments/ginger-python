@@ -26,7 +26,12 @@ class RequestsHttpClientTest(unittest.TestCase):
 
         def side_effect(*_, **kwargs):
             response_mock = mock.MagicMock()
-            response_mock.text = json.dumps(kwargs)
+
+            if kwargs['url'] == 'https://www.example.com/empty/response':
+                response_mock.text = None
+            else:
+                response_mock.text = json.dumps(kwargs)
+
             return response_mock
 
         self._request_mock.side_effect = side_effect
@@ -89,7 +94,12 @@ class RequestsHttpClientTest(unittest.TestCase):
             json.loads(response)
         )
 
-    def test_it_throws_an_exception_on_error(self) -> None:
+    def test_it_returns_none_on_empty_response_body(self) -> None:
+        response = self._client.request('POST', '/empty/response')
+
+        self.assertIsNone(response)
+
+    def test_it_raises_an_exception_on_requests_error(self) -> None:
         self._request_mock.side_effect = requests.TooManyRedirects('Exceeded 10 redirects.')
 
         with self.assertRaises(HttpException) as exception_ctx:

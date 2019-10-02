@@ -1,5 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import Optional
 
 import requests
 
@@ -27,9 +28,29 @@ class RequestsHttpClient(HttpClient):
         self._default_headers = default_headers
         self._default_requests_options = default_requests_options
 
-    def request(self, method: str, path: str, headers: dict = {}, data: str = None) -> str:
+    def request(self, method: str, path: str, headers: dict = {}, data: str = None) -> Optional[str]:
+        options = self._create_requests_options(method, path, headers, data)
+
+        try:
+            response = requests.request(**options)
+        except requests.RequestException as exception:
+            raise HttpException('Requests error: {}: {} ({}) for {}'.format(
+                exception.errno,
+                str(exception),
+                'see https://requests.kennethreitz.org/en/master/api/#exceptions',
+                path
+            )) from exception
+
+        if not response.text:
+            return None
+
+        return response.text
+
+    def _create_requests_options(self, method: str, path: str, headers: dict = {}, data: str = None) -> dict:
         options: dict = {
             **self._default_requests_options,
+            'method': method,
+            'url': self._endpoint + path,
             'auth': (self._api_key, ''),
         }
 
@@ -44,18 +65,4 @@ class RequestsHttpClient(HttpClient):
         if headers:
             options['headers'] = headers
 
-        try:
-            response = requests.request(
-                method=method,
-                url=self._endpoint + path,
-                **options
-            )
-        except requests.RequestException as exception:
-            raise HttpException('Requests error: {}: {} ({}) for {}'.format(
-                exception.errno,
-                str(exception),
-                'see https://requests.kennethreitz.org/en/master/api/#exceptions',
-                path
-            ))
-
-        return response.text
+        return options

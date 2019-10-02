@@ -1,5 +1,8 @@
 import json
 
+from typing import Optional
+from typing import Union
+
 from .http_client import HttpClient
 
 
@@ -31,12 +34,7 @@ class ApiClient(object):
         :raises HttpRequestError: When an error occurred while processing the request.
         :raises json.JSONDecodeError: When the response data could not be decoded.
         """
-        try:
-            response = self._http_client.request('GET', '/ideal/issuers/')
-        except Exception as exception:
-            raise HttpRequestError(exception) from exception
-
-        return self._interpret_response(response)
+        return self.send('GET', '/ideal/issuers/')
 
     def get_order(self, id: str) -> dict:
         """
@@ -47,12 +45,7 @@ class ApiClient(object):
         :raises HttpRequestError: When an error occurred while processing the request.
         :raises json.JSONDecodeError: When the response data could not be decoded.
         """
-        try:
-            response = self._http_client.request('GET', '/orders/{}/'.format(id))
-        except Exception as exception:
-            raise HttpRequestError(exception) from exception
-
-        return self._interpret_response(response)
+        return self.send('GET', '/orders/{}/'.format(id))
 
     def create_order(self, order_data: dict) -> dict:
         """
@@ -63,17 +56,7 @@ class ApiClient(object):
         :raises HttpRequestError: When an error occurred while processing the request.
         :raises json.JSONDecodeError: When the response data could not be decoded.
         """
-        try:
-            response = self._http_client.request(
-                'POST',
-                '/orders/',
-                {'Content-Type': 'application/json'},
-                json.dumps(order_data),
-            )
-        except Exception as exception:
-            raise HttpRequestError(exception) from exception
-
-        return self._interpret_response(response)
+        return self.send('POST', '/orders/', order_data)
 
     def update_order(self, id: str, order_data: dict) -> dict:
         """
@@ -85,17 +68,7 @@ class ApiClient(object):
         :raises HttpRequestError: When an error occurred while processing the request.
         :raises json.JSONDecodeError: When the response data could not be decoded.
         """
-        try:
-            response = self._http_client.request(
-                'PUT',
-                '/orders/{}/'.format(id),
-                {'Content-Type': 'application/json'},
-                json.dumps(order_data),
-            )
-        except Exception as exception:
-            raise HttpRequestError(exception) from exception
-
-        return self._interpret_response(response)
+        return self.send('PUT', '/orders/{}/'.format(id), order_data)
 
     def refund_order(self, id: str, order_data: dict) -> dict:
         """
@@ -107,12 +80,35 @@ class ApiClient(object):
         :raises HttpRequestError: When an error occurred while processing the request.
         :raises json.JSONDecodeError: When the response data could not be decoded.
         """
+        return self.send('POST', '/orders/{}/refunds/'.format(id), order_data)
+
+    def capture_order_transaction(self, order_id: str, transaction_id: str) -> None:
+        """
+        Capture an order transaction.
+
+        :param str order_id: The ID of the order.
+        :param str transaction_id: The ID of the transaction to capture.
+        :raises HttpRequestError: When an error occurred while processing the request.
+        :raises json.JSONDecodeError: When the response data could not be decoded.
+        """
+        self.send('POST', '/orders/{}/transactions/{}/captures/'.format(order_id, transaction_id))
+
+    def send(self, method: str, path: str, data: dict = None) -> Union[dict, list, None]:
+        """
+        Send a request to the API.
+
+        :param str method: HTTP request method
+        :param str path: URL path to call
+        :param str data: Request data to send
+        :raises HttpRequestError: When an error occurred while processing the request.
+        :raises json.JSONDecodeError: When the response data could not be decoded.
+        """
         try:
             response = self._http_client.request(
-                'POST',
-                '/orders/{}/refunds/'.format(id),
-                {'Content-Type': 'application/json'},
-                json.dumps(order_data),
+                method,
+                path,
+                {'Content-Type': 'application/json'} if data else {},
+                json.dumps(data) if data else None
             )
         except Exception as exception:
             raise HttpRequestError(exception) from exception
@@ -120,11 +116,14 @@ class ApiClient(object):
         return self._interpret_response(response)
 
     @staticmethod
-    def _interpret_response(response: str) -> dict:
+    def _interpret_response(response: Optional[str]) -> Optional[dict]:
         """
         :raises HttpRequestError:
         :raises json.JSONDecodeError:
         """
+        if not response:
+            return None
+
         result = json.loads(response)
 
         if 'error' in result:

@@ -83,8 +83,8 @@ the `update_order` method on the client:
 
 ```python
 order = client.get_order(order_id)
-order['description'] = "New Order Description"
-updatedOrder = client.update_order(order)
+order['description'] = 'New Order Description'
+updated_order = client.update_order(order)
 ```
 
 ### Initiating a refund
@@ -93,6 +93,14 @@ You can refund an existing order by using the `refund_order` method on the clien
 
 ```python
 refund_order = client.refund_order(order_id, {'amount': 123, 'description': 'My refund'})
+```
+
+### Capturing an order
+
+You can initiate a capture of an order's transaction by using the `capture_order_transaction` method:
+
+```python
+client.capture_order_transaction(order_id, transaction_id)
 ```
 
 ### Getting the iDEAL issuers
@@ -105,6 +113,21 @@ issuers = client.get_ideal_issuers()
 ```
 
 You can then use this information to present a list to the user of possible banks to choose from.
+
+### Custom requests
+
+You can send any request that the API accepts using the `send` method. E.g. instead of using the `create_order` method
+you could also use the following:
+
+```python
+result = client.send(
+    'POST',      # Request method
+    '/orders/',  # API path
+    order_data   # Data to send with the request; optional
+)
+```
+
+The `$result` variable would then contain the decoded JSON returned by the API.
 
 ## Using a different CA bundle
 

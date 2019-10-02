@@ -34,7 +34,7 @@ class ApiClientTest(unittest.TestCase):
 
         issuers = self._api_client.get_ideal_issuers()
 
-        self._http_client.request.assert_called_with('GET', '/ideal/issuers/')
+        self._http_client.request.assert_called_with('GET', '/ideal/issuers/', {}, None)
         self.assertEqual(expected_issuers, issuers)
 
     def test_it_gets_an_order(self) -> None:
@@ -51,7 +51,7 @@ class ApiClientTest(unittest.TestCase):
 
         order = self._api_client.get_order('fcbfdd3a-ea2c-4240-96b2-613d49b79a55')
 
-        self._http_client.request.assert_called_with('GET', '/orders/fcbfdd3a-ea2c-4240-96b2-613d49b79a55/')
+        self._http_client.request.assert_called_with('GET', '/orders/fcbfdd3a-ea2c-4240-96b2-613d49b79a55/', {}, None)
         self.assertEqual(expected_order, order)
 
     def test_it_creates_an_order(self) -> None:
@@ -142,6 +142,24 @@ class ApiClientTest(unittest.TestCase):
             json.dumps({'amount': 123, 'description': 'My refund'})
         )
         self.assertEqual(expected_order, order)
+
+    def test_it_captures_an_order_transaction(self) -> None:
+        self._http_client.request.return_value = None
+
+        self._api_client.capture_order_transaction(
+            'fcbfdd3a-ea2c-4240-96b2-613d49b79a55',
+            'ca3dfa6f-3dd3-4942-a358-b6852a407333',
+        )
+
+        self._http_client.request.assert_called_with(
+            'POST',
+            '/orders/{}/transactions/{}/captures/'.format(
+                'fcbfdd3a-ea2c-4240-96b2-613d49b79a55',
+                'ca3dfa6f-3dd3-4942-a358-b6852a407333'
+            ),
+            {},
+            None
+        )
 
     def test_it_throws_an_exception_on_http_client_error(self) -> None:
         self._http_client.request.side_effect = HttpRequestError('Whoops!')
