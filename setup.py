@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ginger-sdk",
-    version="2.1.2",
+    version="2.1.3",
     author="Ginger Payments",
     author_email="dev@gingerpayments.com",
     description="The official Ginger Payments Python SDK",
@@ -23,5 +23,6 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    install_requires=['requests>=2.20.0'],
     python_requires='>=3.6',
 )
