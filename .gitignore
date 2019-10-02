@@ -1,3 +1,6 @@
 .env/
 .idea/
 .mypy_cache/
+build/
+dist/
+*.egg-info
