@@ -5,7 +5,7 @@ from .http_client import RequestsHttpClient
 
 
 class Ginger(object):
-    CLIENT_VERSION = '2.1.1'
+    CLIENT_VERSION = '2.1.2'
     API_VERSION = 'v1'
 
     @staticmethod
