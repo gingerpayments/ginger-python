@@ -1,7 +1,8 @@
 # Ginger Python bindings
 
-[![Build Status](https://travis-ci.org/gingerpayments/ginger-php.svg)](https://travis-ci.org/gingerpayments/ginger-python.svg)
-[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/gingerpayments/ginger-php/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/gingerpayments/ginger-python.svg)](https://travis-ci.org/gingerpayments/ginger-python)
+[![PyPI](https://img.shields.io/pypi/v/ginger-sdk)](https://pypi.org/project/ginger-sdk/)
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/gingerpayments/ginger-python/blob/master/LICENSE)
 
 ## Requirements
 
