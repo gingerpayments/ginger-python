@@ -8,6 +8,7 @@ mypy = "*"
 
 [packages]
 requests = ">=2.20.0"
+urllib3 = ">=1.25.8"
 
 [requires]
 python_version = "3"
